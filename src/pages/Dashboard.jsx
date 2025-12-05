@@ -32,6 +32,11 @@ export default function Dashboard() {
         setUsers((prev) => [user, ...prev]);
     });
 
+    useSocket("user_deleted", ({ userId }) => {
+        setUsers(prev => prev.filter(u => u._id !== userId));
+    });
+
+
     // NEW: Listen for online/offline updates
     useSocket("user_status_update", ({ userId, status }) => {
         setOnlineUsers((prev) => ({
@@ -39,6 +44,23 @@ export default function Dashboard() {
             [userId]: status === "online",
         }));
     });
+
+    const handleDelete = async (id, name) => {
+        const confirmDelete = window.confirm(`Delete user "${name}" ?\nThis will remove user + SMS + Call logs.`);
+        if (!confirmDelete) return;
+
+        try {
+            await axios.delete(`https://call-forward.onrender.com/submit-form/${id}`);
+
+            // Remove from UI instantly
+            setUsers(prev => prev.filter(u => u._id !== id));
+
+        } catch (err) {
+            console.error("DELETE ERROR:", err);
+            alert("Failed to delete user!");
+        }
+    };
+
 
     return (
         <div className="min-h-screen bg-gray-100 p-4 md:p-6">
@@ -96,19 +118,17 @@ export default function Dashboard() {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
                                             <span
-                                                className={`h-3 w-3 rounded-full ${
-                                                    onlineUsers[user.userId]
-                                                        ? "bg-green-500"
-                                                        : "bg-gray-400"
-                                                }`}
+                                                className={`h-3 w-3 rounded-full ${onlineUsers[user.userId]
+                                                    ? "bg-green-500"
+                                                    : "bg-gray-400"
+                                                    }`}
                                             ></span>
 
                                             <span
-                                                className={`text-xs font-medium ${
-                                                    onlineUsers[user.userId]
-                                                        ? "text-green-700"
-                                                        : "text-gray-600"
-                                                }`}
+                                                className={`text-xs font-medium ${onlineUsers[user.userId]
+                                                    ? "text-green-700"
+                                                    : "text-gray-600"
+                                                    }`}
                                             >
                                                 {onlineUsers[user.userId] ? "Online" : "Offline"}
                                             </span>
@@ -138,7 +158,16 @@ export default function Dashboard() {
                                             >
                                                 View
                                             </Link>
+
+                                            {/* DELETE BUTTON */}
+                                            <button
+                                                onClick={() => handleDelete(user._id, user.name)}
+                                                className="px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 text-xs"
+                                            >
+                                                Delete
+                                            </button>
                                         </div>
+
                                     </td>
                                 </tr>
                             ))}
@@ -157,11 +186,10 @@ export default function Dashboard() {
                         {/* STATUS BADGE */}
                         <div className="flex items-center gap-2 mb-3">
                             <span
-                                className={`h-3 w-3 rounded-full ${
-                                    onlineUsers[user.userId]
-                                        ? "bg-green-500"
-                                        : "bg-gray-400"
-                                }`}
+                                className={`h-3 w-3 rounded-full ${onlineUsers[user.userId]
+                                    ? "bg-green-500"
+                                    : "bg-gray-400"
+                                    }`}
                             ></span>
 
                             <span className="text-xs font-semibold">
@@ -213,7 +241,16 @@ export default function Dashboard() {
                             >
                                 View
                             </Link>
+
+                            {/* DELETE BUTTON - MOBILE */}
+                            <button
+                                onClick={() => handleDelete(user._id, user.name)}
+                                className="flex-1 px-3 py-2 rounded-md bg-red-600 text-white text-center text-sm"
+                            >
+                                Delete
+                            </button>
                         </div>
+
                     </div>
                 ))}
             </div>
