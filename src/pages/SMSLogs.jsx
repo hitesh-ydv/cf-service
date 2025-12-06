@@ -8,7 +8,6 @@ export default function SMSLogs() {
   const [smsList, setSmsList] = useState([]);
   const fetchedOnce = useRef(false);
 
-  // Fetch initial SMS
   const fetchSMS = async () => {
     try {
       const res = await axios.get(
@@ -23,19 +22,25 @@ export default function SMSLogs() {
   useEffect(() => {
     if (!userId) return;
 
+    // Fetch SMS only once
     if (!fetchedOnce.current) {
       fetchSMS();
       fetchedOnce.current = true;
     }
 
-    if (!socket.connected) socket.connect();
+    // Always connect the socket
+    socket.connect();
 
+    // Join user's room when connected
     const onConnect = () => {
+      console.log("Socket connected → joining user room:", userId);
       socket.emit("join-user", userId);
     };
     socket.on("connect", onConnect);
 
+    // Handle new SMS
     const handleNewSMS = (sms) => {
+      console.log("📩 New SMS received:", sms);
       if (sms.userId !== userId) return;
 
       setSmsList((prev) => {
@@ -44,15 +49,17 @@ export default function SMSLogs() {
       });
     };
 
-    socket.off("new_sms");
+    // Register event listener
     socket.on("new_sms", handleNewSMS);
 
+    // Cleanup listener on unmount/change
     return () => {
       socket.off("connect", onConnect);
       socket.off("new_sms", handleNewSMS);
     };
   }, [userId]);
 
+  // Auto scroll to top on new messages
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [smsList]);
