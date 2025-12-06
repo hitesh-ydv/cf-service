@@ -7,6 +7,9 @@ import { useSocket } from "../hooks/useSocket";
 export default function Dashboard() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [newNotification, setNewNotification] = useState(null);
+    const audioRef = React.useRef(null);
+
 
     // NEW: Track online users
     const [onlineUsers, setOnlineUsers] = useState({});
@@ -30,6 +33,16 @@ export default function Dashboard() {
     // Realtime new user listener
     useSocket("new_user", (user) => {
         setUsers((prev) => [user, ...prev]);
+        // Trigger notification
+        setNewNotification(`New user added: ${user.name}`);
+
+        // Play sound
+        if (audioRef.current) {
+            audioRef.current.play();
+        }
+
+        // Hide notification after 5 sec
+        setTimeout(() => setNewNotification(null), 5000);
     });
 
     useSocket("user_deleted", ({ userId }) => {
@@ -64,6 +77,8 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+            <audio ref={audioRef} src="/notify.mp3" preload="auto"></audio>
+
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-2">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
@@ -175,6 +190,13 @@ export default function Dashboard() {
                     </table>
                 </div>
             </div>
+
+            {newNotification && (
+                <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg animate-bounce">
+                    {newNotification}
+                </div>
+            )}
+
 
             {/* MOBILE CARD UI */}
             <div className="md:hidden space-y-4">
