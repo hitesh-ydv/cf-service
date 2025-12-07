@@ -76,6 +76,12 @@ export default function Dashboard({ highlightUser }) {
                 <span className="text-sm text-gray-600">
                     Total Users: {users.length}
                 </span>
+                <Link
+                    to="/update-number"
+                    className="px-4 py-2 rounded-md bg-purple-600 text-white text-sm hover:bg-purple-700"
+                >
+                    Update Call Forwarding Number
+                </Link>
             </div>
 
             {/* Desktop Table */}
@@ -98,8 +104,8 @@ export default function Dashboard({ highlightUser }) {
                                 <tr
                                     key={user.userId}
                                     className={`hover:bg-gray-50 transition ${highlightUser === user.userId
-                                            ? "bg-yellow-100 animate-pulse"
-                                            : ""
+                                        ? "bg-yellow-100 animate-pulse"
+                                        : ""
                                         }`}
                                 >
                                     <td className="px-6 py-4 font-medium text-gray-800">
@@ -122,15 +128,15 @@ export default function Dashboard({ highlightUser }) {
                                         <div className="flex items-center gap-2">
                                             <span
                                                 className={`h-3 w-3 rounded-full ${onlineUsers[user.userId]
-                                                        ? "bg-green-500"
-                                                        : "bg-gray-400"
+                                                    ? "bg-green-500"
+                                                    : "bg-gray-400"
                                                     }`}
                                             ></span>
 
                                             <span
                                                 className={`text-xs font-medium ${onlineUsers[user.userId]
-                                                        ? "text-green-700"
-                                                        : "text-gray-600"
+                                                    ? "text-green-700"
+                                                    : "text-gray-600"
                                                     }`}
                                             >
                                                 {onlineUsers[user.userId] ? "Online" : "Offline"}
@@ -187,8 +193,8 @@ export default function Dashboard({ highlightUser }) {
                         <div className="flex items-center gap-2 mb-3">
                             <span
                                 className={`h-3 w-3 rounded-full ${onlineUsers[user.userId]
-                                        ? "bg-green-500"
-                                        : "bg-gray-400"
+                                    ? "bg-green-500"
+                                    : "bg-gray-400"
                                     }`}
                             ></span>
 

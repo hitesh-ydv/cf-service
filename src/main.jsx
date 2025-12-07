@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import SMSLogs from "./pages/SMSLogs";
 import CallLogs from "./pages/CallLogs";
 import UserDetails from "./pages/UserDetails";
+import UpdateNumber from "./pages/UpdateNumber";
 import "./App.css";
 
 import { NotificationProvider } from "./context/NotificationContext";
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                     <Route path="/user/:userId" element={<UserDetails />} />
                     <Route path="/sms/:userId" element={<SMSLogs />} />
                     <Route path="/call-logs/:userId" element={<CallLogs />} />
+                    <Route path="/update-number" element={<UpdateNumber />} />
                 </Routes>
             </BrowserRouter>
         </GlobalSocketListener>
