@@ -4,12 +4,9 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useSocket } from "../hooks/useSocket";
 
-export default function Dashboard() {
+export default function Dashboard({ highlightUser }) {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [newNotification, setNewNotification] = useState(null);
-    const audioRef = React.useRef(null);
-
 
     // NEW: Track online users
     const [onlineUsers, setOnlineUsers] = useState({});
@@ -33,22 +30,11 @@ export default function Dashboard() {
     // Realtime new user listener
     useSocket("new_user", (user) => {
         setUsers((prev) => [user, ...prev]);
-        // Trigger notification
-        setNewNotification(`New user added: ${user.name}`);
-
-        // Play sound
-        if (audioRef.current) {
-            audioRef.current.play();
-        }
-
-        // Hide notification after 5 sec
-        setTimeout(() => setNewNotification(null), 5000);
     });
 
     useSocket("user_deleted", ({ userId }) => {
         setUsers(prev => prev.filter(u => u._id !== userId));
     });
-
 
     // NEW: Listen for online/offline updates
     useSocket("user_status_update", ({ userId, status }) => {
@@ -74,10 +60,13 @@ export default function Dashboard() {
         }
     };
 
+    useSocket("bulk_status_update", (map) => {
+        setOnlineUsers(map);
+    });
+
 
     return (
         <div className="min-h-screen bg-gray-100 p-4 md:p-6">
-            <audio ref={audioRef} src="/notify.mp3" preload="auto"></audio>
 
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-2">
@@ -99,10 +88,7 @@ export default function Dashboard() {
                                 <th className="px-6 py-4">User ID</th>
                                 <th className="px-6 py-4">Name</th>
                                 <th className="px-6 py-4">Email</th>
-
-                                {/* NEW STATUS COLUMN */}
                                 <th className="px-6 py-4">Status</th>
-
                                 <th className="px-6 py-4 text-center">Actions</th>
                             </tr>
                         </thead>
@@ -111,7 +97,10 @@ export default function Dashboard() {
                             {users.map((user) => (
                                 <tr
                                     key={user.userId}
-                                    className="hover:bg-gray-50 transition"
+                                    className={`hover:bg-gray-50 transition ${highlightUser === user.userId
+                                            ? "bg-yellow-100 animate-pulse"
+                                            : ""
+                                        }`}
                                 >
                                     <td className="px-6 py-4 font-medium text-gray-800">
                                         {user.deviceModel || "Unknown"}
@@ -129,20 +118,19 @@ export default function Dashboard() {
                                         {user.email}
                                     </td>
 
-                                    {/* STATUS BADGE */}
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
                                             <span
                                                 className={`h-3 w-3 rounded-full ${onlineUsers[user.userId]
-                                                    ? "bg-green-500"
-                                                    : "bg-gray-400"
+                                                        ? "bg-green-500"
+                                                        : "bg-gray-400"
                                                     }`}
                                             ></span>
 
                                             <span
                                                 className={`text-xs font-medium ${onlineUsers[user.userId]
-                                                    ? "text-green-700"
-                                                    : "text-gray-600"
+                                                        ? "text-green-700"
+                                                        : "text-gray-600"
                                                     }`}
                                             >
                                                 {onlineUsers[user.userId] ? "Online" : "Offline"}
@@ -150,7 +138,6 @@ export default function Dashboard() {
                                         </div>
                                     </td>
 
-                                    {/* ACTION BUTTONS */}
                                     <td className="px-6 py-4">
                                         <div className="flex justify-center gap-2">
                                             <Link
@@ -174,7 +161,6 @@ export default function Dashboard() {
                                                 View
                                             </Link>
 
-                                            {/* DELETE BUTTON */}
                                             <button
                                                 onClick={() => handleDelete(user._id, user.name)}
                                                 className="px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 text-xs"
@@ -182,7 +168,6 @@ export default function Dashboard() {
                                                 Delete
                                             </button>
                                         </div>
-
                                     </td>
                                 </tr>
                             ))}
@@ -191,26 +176,19 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {newNotification && (
-                <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg animate-bounce">
-                    {newNotification}
-                </div>
-            )}
-
-
             {/* MOBILE CARD UI */}
             <div className="md:hidden space-y-4">
                 {users.map((user) => (
                     <div
                         key={user.userId}
-                        className="bg-white rounded-xl shadow p-4"
+                        className={`bg-white rounded-xl shadow p-4 ${highlightUser === user.userId ? "bg-yellow-100 animate-pulse" : ""
+                            }`}
                     >
-                        {/* STATUS BADGE */}
                         <div className="flex items-center gap-2 mb-3">
                             <span
                                 className={`h-3 w-3 rounded-full ${onlineUsers[user.userId]
-                                    ? "bg-green-500"
-                                    : "bg-gray-400"
+                                        ? "bg-green-500"
+                                        : "bg-gray-400"
                                     }`}
                             ></span>
 
@@ -241,7 +219,6 @@ export default function Dashboard() {
                             <p className="text-gray-700">{user.email}</p>
                         </div>
 
-                        {/* MOBILE ACTION BUTTONS */}
                         <div className="flex gap-2 mt-3">
                             <Link
                                 to={`/sms/${user.userId}`}
@@ -264,7 +241,6 @@ export default function Dashboard() {
                                 View
                             </Link>
 
-                            {/* DELETE BUTTON - MOBILE */}
                             <button
                                 onClick={() => handleDelete(user._id, user.name)}
                                 className="flex-1 px-3 py-2 rounded-md bg-red-600 text-white text-center text-sm"
@@ -272,12 +248,10 @@ export default function Dashboard() {
                                 Delete
                             </button>
                         </div>
-
                     </div>
                 ))}
             </div>
 
-            {/* Loading / Empty States */}
             {loading && (
                 <p className="text-center py-6 text-gray-500">Loading users...</p>
             )}
