@@ -10,17 +10,36 @@ import "./App.css";
 
 import { NotificationProvider } from "./context/NotificationContext";
 import GlobalSocketListener from "./components/GlobalSocketListener";
+import Login from "./pages/Login";
+import PrivateRoute from "./components/PrivateRoute";
+
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <NotificationProvider>
         <GlobalSocketListener>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/user/:userId" element={<UserDetails />} />
-                    <Route path="/sms/:userId" element={<SMSLogs />} />
-                    <Route path="/call-logs/:userId" element={<CallLogs />} />
-                    <Route path="/update-number" element={<UpdateNumber />} />
+                    <Route path="/login" element={<Login />} />
+
+                    <Route path="/" element={
+                        <PrivateRoute><Dashboard /></PrivateRoute>
+                    }/>
+
+                    <Route path="/user/:userId" element={
+                        <PrivateRoute><UserDetails /></PrivateRoute>
+                    }/>
+
+                    <Route path="/sms/:userId" element={
+                        <PrivateRoute><SMSLogs /></PrivateRoute>
+                    }/>
+
+                    <Route path="/call-logs/:userId" element={
+                        <PrivateRoute><CallLogs /></PrivateRoute>
+                    }/>
+
+                    <Route path="/update-number" element={
+                        <PrivateRoute><UpdateNumber /></PrivateRoute>
+                    }/>
                 </Routes>
             </BrowserRouter>
         </GlobalSocketListener>
