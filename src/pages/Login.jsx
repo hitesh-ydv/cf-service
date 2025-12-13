@@ -8,20 +8,24 @@ export default function Login() {
     const [error, setError] = useState("");
 
     const navigate = useNavigate();
+async function handleLogin(e) {
+  e.preventDefault();
 
-    async function handleLogin(e) {
-        e.preventDefault();
-        try {
-            const res = await axios.post("https://call-forward.onrender.com/api/login", {
-                username,
-                password,
-            });
-            localStorage.setItem("adminToken", res.data.token);
-            navigate("/");
-        } catch (err) {
-            setError("Invalid username or password");
-        }
-    }
+  try {
+    await axios.post(
+      "https://call-forward.onrender.com/api/login",
+      { username, password },
+      {
+        withCredentials: true // ✅ VERY IMPORTANT
+      }
+    );
+
+    navigate("/"); // login success
+  } catch (err) {
+    setError("Invalid username or password");
+  }
+}
+
 
     return (
         <div className="min-h-screen flex justify-center items-center bg-gray-100">
