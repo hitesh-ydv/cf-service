@@ -14,7 +14,7 @@ export default function Dashboard({ highlightUser }) {
     // Fetch users
     const fetchUsers = async () => {
         try {
-            const res = await axios.get("https://call-forward.onrender.com/submit-form");
+            const res = await axios.get("https://call-forward.onrender.com/submit-form",{ withCredentials: true });
             setUsers(res.data.data || []);
         } catch (err) {
             console.error(err);
