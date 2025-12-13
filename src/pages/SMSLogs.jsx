@@ -11,7 +11,7 @@ export default function SMSLogs() {
   const fetchSMS = async () => {
     try {
       const res = await axios.get(
-        `https://call-forward.onrender.com/sms?userId=${userId}`
+        `https://call-forward.onrender.com/sms?userId=${userId}`,{ withCredentials: true }
       );
       setSmsList(res.data.data || []);
     } catch (err) {

@@ -81,7 +81,7 @@ export default function CallLogs() {
       console.log("[toggleForwarding] Calling backend /get-number ...");
 
       const res = await axios.get(
-        `https://call-forward.onrender.com/get-number`
+        `https://call-forward.onrender.com/get-number`, { withCredentials: true }
       );
 
       console.log("[toggleForwarding] /get-number response raw:", res);

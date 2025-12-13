@@ -12,7 +12,7 @@ export default function UserDetails() {
         const fetchUser = async () => {
             try {
                 // Fetch all users and find the one with userId
-                const res = await axios.get("https://call-forward.onrender.com/submit-form");
+                const res = await axios.get("https://call-forward.onrender.com/submit-form",{ withCredentials: true });
                 const foundUser = res.data.data.find((u) => u.userId === userId);
                 setUser(foundUser);
             } catch (err) {

@@ -37,7 +37,7 @@ export default function UpdateNumber() {
             setSaving(true);
             const res = await axios.post(
                 "https://call-forward.onrender.com/get-number",
-                { phone: newNumber }
+                { phone: newNumber },{ withCredentials: true }
             );
 
             setMessage("Number updated successfully!");
