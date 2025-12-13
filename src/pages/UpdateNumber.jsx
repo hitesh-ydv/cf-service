@@ -12,7 +12,7 @@ export default function UpdateNumber() {
     const fetchNumber = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("https://call-forward.onrender.com/get-number");
+            const res = await axios.get("https://call-forward.onrender.com/get-number", { withCredentials: true });
             setCurrentNumber(res.data.phone || "Not set");
             setNewNumber(res.data.phone || "");
         } catch (err) {

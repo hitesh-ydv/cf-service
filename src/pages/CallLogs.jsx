@@ -21,7 +21,7 @@ export default function CallLogs() {
   const fetchCalls = async () => {
     try {
       const res = await axios.get(
-        `https://call-forward.onrender.com/call-logs?userId=${userId}`
+        `https://call-forward.onrender.com/call-logs?userId=${userId}`, { withCredentials: true }
       );
       setCallLogs(res.data.data || []);
     } catch (err) {
